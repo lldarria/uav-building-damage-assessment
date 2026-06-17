@@ -29,7 +29,7 @@ Three versions of the dataset were generated in the work. The third version beca
 |----------------|----------|--------------|-----------|--------|----------|
 | V1 | 0.369 | 0.170 | 0.383 | 0.533 | 0.446 |
 | V2 | 0.349 | 0.155 | 0.361 | 0.479 | 0.412 |
-| V3 | 0.493 | 0.211 | 0.507 | 0.567 | 0.535 |
+| V3 | 0.493 | 0.211 | 0.507 | 0.567 | 0.535 | <br>
 The quality and balance of the dataset were analyzed to determine their impact on model performance and it was found that data quality critically affects model performance. <br>
 
 ## Main
@@ -48,17 +48,17 @@ Model performance was evaluated using: Precision, Recall, mAP (Mean Average Prec
 |------------|--------|----------|--------------|-----------|--------|----------|
 | Baseline | YOLO11n | 0.564 | 0.232 | 0.562 | 0.648 | 0.602 |
 | Strong Augmentation | YOLO11n | 0.540 | 0.214 | 0.540 | 0.664 | 0.595 |
-| Mild Augmentation | YOLO11n | 0.446 | 0.165 | 0.501 | 0.570 | 0.533 |
+| Mild Augmentation | YOLO11n | 0.446 | 0.165 | 0.501 | 0.570 | 0.533 | <br>
 Light augmentations showed the best results, while strong ones worsened the quality of detection.
 - Increasing the size of the input image
 | Experiment | Model | mAP@0.5 | Precision | Recall |
 |------------|--------|----------|-----------|--------|
-| Image Size 1024 | YOLO11n | 0.568 | 0.588 | 0.626 |
+| Image Size 1024 | YOLO11n | 0.568 | 0.588 | 0.626 | <br>
 Increasing the input image size to 1024 pixels did not yield a significant increase in quality.
 - Patch-based learning
 | Model | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |
 |--------|----------|--------------|-----------|--------|
-| Patch-Based Model | 0.513 | 0.209 | 0.543 | 0.635 |
+| Patch-Based Model | 0.513 | 0.209 | 0.543 | 0.635 | <br>
 The patch-oriented approach led to a large number of duplicates and errors in finding objects. <br>
 Thus, it was found that the greatest impact on the accuracy of the model is the quality and balance of the dataset.
 
@@ -66,26 +66,26 @@ Thus, it was found that the greatest impact on the accuracy of the model is the 
 For this task, the YOLOv11s model provides a good balance between speed, stability, and detection quality. <br> 
 | Model | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |
 |--------|----------|--------------|-----------|--------|
-| YOLO11s | 0.580 | 0.248 | 0.587 | 0.681 |
+| YOLO11s | 0.580 | 0.248 | 0.587 | 0.681 | <br>
 <IPython.core.display.Image object><img width="2250" height="1500" alt="image" src="https://github.com/user-attachments/assets/dee6d71e-4898-4af2-8f5b-15c45bd6f2e5" />
 <IPython.core.display.Image object><img width="2250" height="1500" alt="image" src="https://github.com/user-attachments/assets/a231b06f-f097-4280-8d2e-cf04ba787a4c" />
 
 ### Methods for improving the quality of final detection.
 - Confidence Threshold
 | Confidence Threshold | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |
-|---------------------|----------|--------------|-----------|--------|
+|---------------------|----------|--------------|-----------|--------| <br>
 | 0.2 | 0.578 | 0.271 | 0.624 | 0.665 |
 The influence of the model confidence threshold was analyzed, a confidence threshold of 0.2 provides the best balance between Precision and Recall.
 - Test-Time Augmentation
 | Configuration | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |
 |--------------|----------|--------------|-----------|--------|
-| YOLO11s + TTA | 0.597 | 0.275 | 0.585 | 0.726 |
+| YOLO11s + TTA | 0.597 | 0.275 | 0.585 | 0.726 | <br>
 Provided a small but consistent improvement in detection quality, especially for complex and small damaged objects.
 - Post-processing evaluation
 | Mode | MAE | RMSE | MAPE (%) |
 |------|------|------|----------|
 | Before Post-Processing | 16.43 | 24.96 | 89.61 |
-| After Post-Processing | 12.43 | 17.76 | 64.12 |
+| After Post-Processing | 12.43 | 17.76 | 64.12 | <br>
 Post-processing using the Non-Maximum Suppression algorithm was implemented. This improved the accuracy of object counting and reduced the mean absolute error by 25%.
 
 ### Model results
@@ -95,14 +95,6 @@ Post-processing using the Non-Maximum Suppression algorithm was implemented. Thi
 For most images, the error is small, and significant errors occur only in some complex examples, with noise, partial overlap, and low quality of individual objects. <br>
 The results obtained show that the model is able not only to detect damaged windows, but also to perform their quantitative counting with acceptable accuracy. <br>
 The quality of detection depends on the quality of the input data.
-
-## Key Results
-- Built a custom UAV dataset with annotated damaged windows.
-- Compared Faster R-CNN, SSD and YOLO architectures.
-- Identified YOLO11s as the most effective model.
-- Improved detection quality using Test-Time Augmentation (TTA).
-- Developed a post-processing pipeline based on confidence filtering and NMS.
-- Reduced object counting error by 25%.
 
 ## Inference
 The developed method is a combination of YOLO11s + TTA + post-processing. <br>
@@ -119,9 +111,11 @@ The results obtained confirm the possibility of using the proposed approach for 
 - Jupyter Notebook
 
 ## Repository Structure
+```
 ├── data/               
 ├── models/             
 ├── notebooks/          
 ├── requirements.txt    
 ├── .gitignore
 └── README.md
+```
