@@ -76,7 +76,7 @@ The quality and balance of the dataset were analyzed to determine their impact o
 ### Object Detection Models
 Several CNN-based object detection approaches were investigated: Faster R-CNN, SSD, YOLO
 <Figure size 640x480 with 1 Axes><img width="562" height="455" alt="image" src="https://github.com/user-attachments/assets/44e8d441-9ebb-4e8c-b195-4be9c74cbc08" />
-YOLO provided the best balance between speed, accuracy, and the possibility of further optimization. SSD showed poor detection results, and Faster R-CNN significantly overestimated the number of objects and generated a large number of false positives. <br>
+<br> YOLO provided the best balance between speed, accuracy, and the possibility of further optimization. SSD showed poor detection results, and Faster R-CNN significantly overestimated the number of objects and generated a large number of false positives. <br>
 Therefore, the YOLO family of models was chosen for further research. <br>
 
 ### Evaluation Metrics
@@ -271,13 +271,126 @@ For this task, the YOLOv11s model provides a good balance between speed, stabili
 
 ### Methods for improving the quality of final detection.
 - Confidence Threshold
-<img width="731" height="307" alt="image" src="https://github.com/user-attachments/assets/16e29df8-f229-475c-98b3-630f01dae37d" />
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>conf</th>
+      <th>mAP@50</th>
+      <th>mAP@50-95</th>
+      <th>Precision</th>
+      <th>Recall</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.2</td>
+      <td>0.578227</td>
+      <td>0.271176</td>
+      <td>0.624217</td>
+      <td>0.665184</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 The influence of the model confidence threshold was analyzed, a confidence threshold of 0.2 provides the best balance between Precision and Recall.
 - Test-Time Augmentation
-<img width="715" height="91" alt="image" src="https://github.com/user-attachments/assets/8c464f7c-a98b-4a7b-91df-81cc43771788" />
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mode</th>
+      <th>mAP@50</th>
+      <th>mAP@50-95</th>
+      <th>Precision</th>
+      <th>Recall</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>yolo11s_TTA</td>
+      <td>0.596594</td>
+      <td>0.274765</td>
+      <td>0.585383</td>
+      <td>0.726363</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 Provided a small but consistent improvement in detection quality, especially for complex and small damaged objects.
 - Post-processing evaluation
-<img width="622" height="123" alt="image" src="https://github.com/user-attachments/assets/f7609f95-ef0d-4477-a49e-68cb87c3d3bf" />
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mode</th>
+      <th>MAE</th>
+      <th>RMSE</th>
+      <th>MAPE_%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>before_postproc</td>
+      <td>16.433333</td>
+      <td>24.963306</td>
+      <td>89.612943</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>after_postproc</td>
+      <td>12.433333</td>
+      <td>17.756689</td>
+      <td>64.121583</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 Post-processing using the Non-Maximum Suppression algorithm was implemented. This improved the accuracy of object counting and reduced the mean absolute error by 25%.
 
 ### Model results
