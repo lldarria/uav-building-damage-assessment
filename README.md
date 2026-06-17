@@ -6,6 +6,14 @@ During the research, the specifics of aerial imagery were analyzed, and the inef
 The impact of model scaling, augmentation modes, and inference optimization methods was investigated. It was shown that the use of excessive geometric augmentations destroys the spatial features of small objects. The optimal balance between precision, recall, and computational speed was found to be provided by the YOLO11s configuration combined with Test-Time Augmentation. <br>
 A mathematical post-processing algorithm for inference results was developed and implemented, including multi-criteria filtering (by confidence score, object area) and Non-Maximum Suppression (NMS). The developed system is ready for integration into monitoring software complexes to accelerate the damage recovery process.  <br>
 
+## Key Results
+- Built a custom UAV dataset with annotated damaged windows.
+- Compared Faster R-CNN, SSD and YOLO architectures.
+- Identified YOLO11s as the most effective model.
+- Improved detection quality using Test-Time Augmentation (TTA).
+- Developed a post-processing pipeline based on confidence filtering and NMS.
+- Reduced object counting error by 25%.
+  
 ## Objectives
 - analyze the current state of research and existing computer vision methods in the field of infrastructure damage detection using UAV data;
 - investigate and select optimal architectures of convolutional neural networks for the task of detecting small objects in high-resolution images;
@@ -17,59 +25,11 @@ A mathematical post-processing algorithm for inference results was developed and
 A custom dataset was prepared based on UAV images containing damaged building windows.<br>
 Data preparation included: Data cleaning, Image annotation, Class balancing, Dividing the dataset into training and validation subsets, Quality control of annotations. <br>
 Three versions of the dataset were generated in the work. The third version became the basis for all further research. <br>
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>mAP@0.5</th>
-      <th>mAP@0.5:0.95</th>
-      <th>Precision</th>
-      <th>Recall</th>
-      <th>F1</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Model_V1</th>
-      <td>0.368614</td>
-      <td>0.169824</td>
-      <td>0.382910</td>
-      <td>0.533496</td>
-      <td>0.445830</td>
-    </tr>
-    <tr>
-      <th>Model_V2</th>
-      <td>0.349119</td>
-      <td>0.154695</td>
-      <td>0.361379</td>
-      <td>0.478632</td>
-      <td>0.411822</td>
-    </tr>
-    <tr>
-      <th>Model_V3</th>
-      <td>0.493211</td>
-      <td>0.211139</td>
-      <td>0.507229</td>
-      <td>0.567106</td>
-      <td>0.535498</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Dataset Version | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall | F1-score |
+|----------------|----------|--------------|-----------|--------|----------|
+| V1 | 0.369 | 0.170 | 0.383 | 0.533 | 0.446 |
+| V2 | 0.349 | 0.155 | 0.361 | 0.479 | 0.412 |
+| V3 | 0.493 | 0.211 | 0.507 | 0.567 | 0.535 |
 The quality and balance of the dataset were analyzed to determine their impact on model performance and it was found that data quality critically affects model performance. <br>
 
 ## Main
@@ -84,335 +44,84 @@ Model performance was evaluated using: Precision, Recall, mAP (Mean Average Prec
 
 ### Accuracy assessment
 - Augmentation
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>exp</th>
-      <th>model</th>
-      <th>mAP@50</th>
-      <th>mAP@50-95</th>
-      <th>Precision</th>
-      <th>Recall</th>
-      <th>F1</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>v3_baseline</td>
-      <td>yolo11n.pt</td>
-      <td>0.564221</td>
-      <td>0.231534</td>
-      <td>0.562030</td>
-      <td>0.648498</td>
-      <td>0.602176</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>v3_strong</td>
-      <td>yolo11n.pt</td>
-      <td>0.540251</td>
-      <td>0.214106</td>
-      <td>0.539533</td>
-      <td>0.664071</td>
-      <td>0.595359</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>v3_mild</td>
-      <td>yolo11n.pt</td>
-      <td>0.446125</td>
-      <td>0.165090</td>
-      <td>0.501267</td>
-      <td>0.569522</td>
-      <td>0.533219</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Experiment | Model | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall | F1-score |
+|------------|--------|----------|--------------|-----------|--------|----------|
+| Baseline | YOLO11n | 0.564 | 0.232 | 0.562 | 0.648 | 0.602 |
+| Strong Augmentation | YOLO11n | 0.540 | 0.214 | 0.540 | 0.664 | 0.595 |
+| Mild Augmentation | YOLO11n | 0.446 | 0.165 | 0.501 | 0.570 | 0.533 |
 Light augmentations showed the best results, while strong ones worsened the quality of detection.
 - Increasing the size of the input image
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>exp</th>
-      <th>model</th>
-      <th>mAP@50</th>
-      <th>Precision</th>
-      <th>Recall</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>v3_img1024</td>
-      <td>yolo11n.pt</td>
-      <td>0.567931</td>
-      <td>0.58773</td>
-      <td>0.626251</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Experiment | Model | mAP@0.5 | Precision | Recall |
+|------------|--------|----------|-----------|--------|
+| Image Size 1024 | YOLO11n | 0.568 | 0.588 | 0.626 |
 Increasing the input image size to 1024 pixels did not yield a significant increase in quality.
 - Patch-based learning
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>model</th>
-      <th>mAP@50</th>
-      <th>mAP@50-95</th>
-      <th>Precision</th>
-      <th>Recall</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>v3_patch_model</td>
-      <td>0.513151</td>
-      <td>0.208947</td>
-      <td>0.543454</td>
-      <td>0.63515</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Model | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |
+|--------|----------|--------------|-----------|--------|
+| Patch-Based Model | 0.513 | 0.209 | 0.543 | 0.635 |
 The patch-oriented approach led to a large number of duplicates and errors in finding objects. <br>
-
 Thus, it was found that the greatest impact on the accuracy of the model is the quality and balance of the dataset.
 
 ### Optimal architecture
 For this task, the YOLOv11s model provides a good balance between speed, stability, and detection quality. <br> 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>model</th>
-      <th>mAP@50</th>
-      <th>mAP@50-95</th>
-      <th>Precision</th>
-      <th>Recall</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>v3_y11s</td>
-      <td>0.580322</td>
-      <td>0.247619</td>
-      <td>0.587344</td>
-      <td>0.68079</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Model | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |
+|--------|----------|--------------|-----------|--------|
+| YOLO11s | 0.580 | 0.248 | 0.587 | 0.681 |
 <IPython.core.display.Image object><img width="2250" height="1500" alt="image" src="https://github.com/user-attachments/assets/dee6d71e-4898-4af2-8f5b-15c45bd6f2e5" />
 <IPython.core.display.Image object><img width="2250" height="1500" alt="image" src="https://github.com/user-attachments/assets/a231b06f-f097-4280-8d2e-cf04ba787a4c" />
 
 ### Methods for improving the quality of final detection.
 - Confidence Threshold
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>conf</th>
-      <th>mAP@50</th>
-      <th>mAP@50-95</th>
-      <th>Precision</th>
-      <th>Recall</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0.2</td>
-      <td>0.578227</td>
-      <td>0.271176</td>
-      <td>0.624217</td>
-      <td>0.665184</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Confidence Threshold | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |
+|---------------------|----------|--------------|-----------|--------|
+| 0.2 | 0.578 | 0.271 | 0.624 | 0.665 |
 The influence of the model confidence threshold was analyzed, a confidence threshold of 0.2 provides the best balance between Precision and Recall.
 - Test-Time Augmentation
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>mode</th>
-      <th>mAP@50</th>
-      <th>mAP@50-95</th>
-      <th>Precision</th>
-      <th>Recall</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>yolo11s_TTA</td>
-      <td>0.596594</td>
-      <td>0.274765</td>
-      <td>0.585383</td>
-      <td>0.726363</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Configuration | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |
+|--------------|----------|--------------|-----------|--------|
+| YOLO11s + TTA | 0.597 | 0.275 | 0.585 | 0.726 |
 Provided a small but consistent improvement in detection quality, especially for complex and small damaged objects.
 - Post-processing evaluation
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>mode</th>
-      <th>MAE</th>
-      <th>RMSE</th>
-      <th>MAPE_%</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>before_postproc</td>
-      <td>16.433333</td>
-      <td>24.963306</td>
-      <td>89.612943</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>after_postproc</td>
-      <td>12.433333</td>
-      <td>17.756689</td>
-      <td>64.121583</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Mode | MAE | RMSE | MAPE (%) |
+|------|------|------|----------|
+| Before Post-Processing | 16.43 | 24.96 | 89.61 |
+| After Post-Processing | 12.43 | 17.76 | 64.12 |
 Post-processing using the Non-Maximum Suppression algorithm was implemented. This improved the accuracy of object counting and reduced the mean absolute error by 25%.
 
 ### Model results
 <Figure size 700x700 with 1 Axes><img width="619" height="624" alt="image" src="https://github.com/user-attachments/assets/2e6f15e9-b39a-46c9-b07d-7cb7dfd0a878" />
 <Figure size 1200x400 with 1 Axes><img width="996" height="393" alt="image" src="https://github.com/user-attachments/assets/949022ca-7bb5-42a4-86a6-1a5ab41341be" />
-<Figure size 700x400 with 1 Axes><img width="609" height="393" alt="image" src="https://github.com/user-attachments/assets/85731496-520d-45fc-904d-e838a680091f" />
+<Figure size 700x400 with 1 Axes><img width="609" height="393" alt="image" src="https://github.com/user-attachments/assets/85731496-520d-45fc-904d-e838a680091f" /> <br>
 For most images, the error is small, and significant errors occur only in some complex examples, with noise, partial overlap, and low quality of individual objects. <br>
 The results obtained show that the model is able not only to detect damaged windows, but also to perform their quantitative counting with acceptable accuracy. <br>
 The quality of detection depends on the quality of the input data.
+
+## Key Results
+- Built a custom UAV dataset with annotated damaged windows.
+- Compared Faster R-CNN, SSD and YOLO architectures.
+- Identified YOLO11s as the most effective model.
+- Improved detection quality using Test-Time Augmentation (TTA).
+- Developed a post-processing pipeline based on confidence filtering and NMS.
+- Reduced object counting error by 25%.
 
 ## Inference
 The developed method is a combination of YOLO11s + TTA + post-processing. <br>
 The results obtained confirm the possibility of using the proposed approach for tasks of operational monitoring and initial assessment of building damage with the possibility of further optimization.
 
-
 ## Technologies
-Python
-YOLOv8
-YOLOv11
-PyTorch
-OpenCV
-NumPy
-Pandas
-Matplotlib
-Jupyter Notebook
+- Python
+- PyTorch
+- Ultralytics YOLO
+- OpenCV
+- NumPy
+- Pandas
+- Matplotlib
+- Jupyter Notebook
+
+## Repository Structure
+├── data/               
+├── models/             
+├── notebooks/          
+├── requirements.txt    
+├── .gitignore
+└── README.md
